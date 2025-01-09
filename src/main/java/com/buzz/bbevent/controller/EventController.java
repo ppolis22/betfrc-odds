@@ -1,5 +1,6 @@
-package com.buzz.bbevent;
+package com.buzz.bbevent.controller;
 
+import com.buzz.bbevent.service.EventService;
 import com.buzz.bbevent.entity.Event;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

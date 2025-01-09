@@ -1,6 +1,7 @@
-package com.buzz.bbevent;
+package com.buzz.bbevent.service;
 
 import com.buzz.bbevent.entity.Event;
+import com.buzz.bbevent.repo.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

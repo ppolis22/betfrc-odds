@@ -1,4 +1,4 @@
-package com.buzz.bbevent;
+package com.buzz.bbevent.service;
 
 import com.buzz.bbevent.entity.Event;
 
