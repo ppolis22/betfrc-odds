@@ -1,0 +1,10 @@
+package com.buzz.bbevent;
+
+import com.buzz.bbevent.entity.Event;
+
+import java.util.List;
+
+public interface EventService {
+    List<Event> getAllEvents();
+    void createEvent(Event event);
+}
