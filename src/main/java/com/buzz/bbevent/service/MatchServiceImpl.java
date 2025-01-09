@@ -50,6 +50,10 @@ public class MatchServiceImpl implements MatchService {
         List<Team> redTeams = getTeams(matchData.getRedTeams());
         List<Team> blueTeams = getTeams(matchData.getBlueTeams());
 
+        if (redTeams.size() != 3 || blueTeams.size() != 3) {
+            throw new IllegalArgumentException("Incorrect number of teams.");
+        }
+
         Match newMatch = new Match(null, event, null, matchData.getMatchNumber(), matchData.getMatchTime());
         matchRepository.save(newMatch);
 

@@ -35,9 +35,13 @@ public class MatchController {
     }
 
     @PostMapping("/events/{id}/matches")
-    public ResponseEntity<Void> createMatch(@PathVariable String id,
+    public ResponseEntity<String> createMatch(@PathVariable String id,
                                             @RequestBody MatchPostDto matchData) {
-        matchService.createMatch(id, matchData);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            matchService.createMatch(id, matchData);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Successfully created match.", HttpStatus.CREATED);
     }
 }
