@@ -38,8 +38,6 @@ public class OddsController {
             }
         }
 
-        return new ResponseEntity<>(
-                new PropResponseDto(props, missingIds),
-                missingIds.isEmpty() ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new PropResponseDto(props, missingIds), HttpStatus.OK);
     }
 }
