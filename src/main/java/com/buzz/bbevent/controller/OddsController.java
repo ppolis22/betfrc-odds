@@ -1,5 +1,6 @@
 package com.buzz.bbevent.controller;
 
+import com.buzz.bbevent.dto.PropPostDto;
 import com.buzz.bbevent.dto.PropResponseDto;
 import com.buzz.bbevent.dto.PropQueryDto;
 import com.buzz.bbevent.entity.Prop;
@@ -22,6 +23,12 @@ public class OddsController {
 
     public OddsController(PropService propsService) {
         this.propsService = propsService;
+    }
+
+    @PostMapping("/event/{eventId}")
+    public ResponseEntity<Prop> postEventProp(@RequestBody PropPostDto prop) {
+        Prop createdProp = propsService.createProp(prop);
+        return new ResponseEntity<>(createdProp, HttpStatus.OK);
     }
 
     @PostMapping("/query")
