@@ -2,29 +2,27 @@ package com.buzz.bbevent.dto;
 
 import com.buzz.bbevent.entity.PropType;
 
+import java.util.List;
+
 public class PropPostDto {
-    private String typeId;
+    private String propTypeId;
     private String parentId;
-    private String propValue;
-    private Integer odds;
-    private String parentType;
+    private List<PropValueDto> propValues;
 
     public PropPostDto() {}
 
-    public PropPostDto(String typeId, String parentId, String propValue, Integer odds, String parentType) {
-        this.typeId = typeId;
+    public PropPostDto(String propTypeId, String parentId, List<PropValueDto> propValues) {
+        this.propTypeId = propTypeId;
         this.parentId = parentId;
-        this.propValue = propValue;
-        this.odds = odds;
-        this.parentType = parentType;
+        this.propValues = propValues;
     }
 
-    public String getTypeId() {
-        return typeId;
+    public String getPropTypeId() {
+        return propTypeId;
     }
 
-    public void setTypeId(String typeId) {
-        this.typeId = typeId;
+    public void setPropTypeId(String propTypeId) {
+        this.propTypeId = propTypeId;
     }
 
     public String getParentId() {
@@ -35,27 +33,11 @@ public class PropPostDto {
         this.parentId = parentId;
     }
 
-    public String getPropValue() {
-        return propValue;
+    public List<PropValueDto> getPropValues() {
+        return propValues;
     }
 
-    public void setPropValue(String propValue) {
-        this.propValue = propValue;
-    }
-
-    public Integer getOdds() {
-        return odds;
-    }
-
-    public void setOdds(Integer odds) {
-        this.odds = odds;
-    }
-
-    public String getParentType() {
-        return parentType;
-    }
-
-    public void setParentType(String parentType) {
-        this.parentType = parentType;
+    public void setPropValues(List<PropValueDto> propValues) {
+        this.propValues = propValues;
     }
 }

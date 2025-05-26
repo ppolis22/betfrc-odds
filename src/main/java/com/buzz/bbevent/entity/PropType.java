@@ -16,14 +16,19 @@ public class PropType {
     private List<Prop> props;
 
     private String label;
+    private String parentType;  // TODO convert to enum. Also might not even need this?
 
-    public PropType() {
+    public PropType() {}
+
+    public PropType(String label, String parentType) {
+        this(null, null, label, parentType);
     }
 
-    public PropType(String id, List<Prop> props, String label) {
+    public PropType(String id, List<Prop> props, String label, String parentType) {
         this.id = id;
         this.props = props;
         this.label = label;
+        this.parentType = parentType;
     }
 
     public String getId() {
@@ -48,5 +53,13 @@ public class PropType {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getParentType() {
+        return parentType;
+    }
+
+    public void setParentType(String parentType) {
+        this.parentType = parentType;
     }
 }

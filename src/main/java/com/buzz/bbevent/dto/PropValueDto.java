@@ -1,0 +1,29 @@
+package com.buzz.bbevent.dto;
+
+public class PropValueDto {
+    private String value;
+    private Integer odds;
+
+    public PropValueDto() {}
+
+    public PropValueDto(String value, Integer odds) {
+        this.value = value;
+        this.odds = odds;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Integer getOdds() {
+        return odds;
+    }
+
+    public void setOdds(Integer odds) {
+        this.odds = odds;
+    }
+}

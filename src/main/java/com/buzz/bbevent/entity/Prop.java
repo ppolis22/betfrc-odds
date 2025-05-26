@@ -2,6 +2,8 @@ package com.buzz.bbevent.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Prop {
     @Id
@@ -11,22 +13,17 @@ public class Prop {
     @ManyToOne
     private PropType type;
 
-    private String parentId;
-    private String propValue;
-    private Integer odds;
+    @OneToMany(mappedBy = "prop")
+    private List<PropValue> values;
 
-    // TODO convert to enum
-    private String parentType;
+    private String parentId;
 
     public Prop() { }
 
-    public Prop(String id, String parentType, PropType type, String parentId, String propValue, Integer odds) {
+    public Prop(String id, PropType type, String parentId) {
         this.id = id;
-        this.parentType = parentType;
         this.type = type;
         this.parentId = parentId;
-        this.propValue = propValue;
-        this.odds = odds;
     }
 
     public String getId() {
@@ -35,14 +32,6 @@ public class Prop {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getParentType() {
-        return parentType;
-    }
-
-    public void setParentType(String parentType) {
-        this.parentType = parentType;
     }
 
     public PropType getType() {
@@ -61,19 +50,11 @@ public class Prop {
         this.parentId = parentId;
     }
 
-    public String getPropValue() {
-        return propValue;
+    public List<PropValue> getValues() {
+        return values;
     }
 
-    public void setPropValue(String propValue) {
-        this.propValue = propValue;
-    }
-
-    public Integer getOdds() {
-        return odds;
-    }
-
-    public void setOdds(Integer odds) {
-        this.odds = odds;
+    public void setValues(List<PropValue> values) {
+        this.values = values;
     }
 }
