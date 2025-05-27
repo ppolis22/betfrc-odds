@@ -6,12 +6,12 @@ import com.buzz.bbevent.entity.Prop;
 import com.buzz.bbevent.entity.PropType;
 import com.buzz.bbevent.entity.PropValue;
 import com.buzz.bbevent.entity.PropValueId;
+import com.buzz.bbevent.exception.InvalidRequestException;
+import com.buzz.bbevent.exception.MissingResourceException;
 import com.buzz.bbevent.repo.PropRepository;
 import com.buzz.bbevent.repo.PropTypeRepository;
 import com.buzz.bbevent.repo.PropValueRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PropServiceImpl implements PropService {
@@ -50,37 +50,41 @@ public class PropServiceImpl implements PropService {
             PropValue newPropValue = new PropValue(
                     newPropValueId,
                     createdProp,
-                    propValue.getOdds(),
-                    true);
+                    propValue.getOdds());
             propValueRepository.save(newPropValue);
         }
 
-        return getProp(createdProp.getId());    // to populate the propValue list
+        return getProp(createdProp.getId());    // TODO find out why this doesn't work
     }
 
     @Override
-    public void setPropValues(String propId, List<PropValueDto> propValues) {
-        Prop propToUpdate = propRepository.findById(propId).orElse(null);
-        if (propToUpdate == null) {
-            // TODO throw something
+    public void addPropValue(String propId, PropValueDto propValue)
+            throws MissingResourceException, InvalidRequestException {
+        Prop prop = propRepository.findById(propId).orElseThrow(MissingResourceException::new);
+        for (PropValue existingValue : prop.getValues()) {
+            if (existingValue.getId().getPropValue().equals(propValue.getValue())) {
+                throw new InvalidRequestException();
+            }
         }
-
-        propValueRepository.deleteByPropId(propToUpdate.getId());
-
-        for (PropValueDto propValue : propValues) {
-            PropValueId id = new PropValueId(propValue.getValue(), propToUpdate.getId());
-            PropValue newPropValue = new PropValue(id, propToUpdate, propValue.getOdds(), true);
-            propValueRepository.save(newPropValue);
-        }
+        PropValueId propValueId = new PropValueId(propValue.getValue(), propId);
+        PropValue newPropValue = new PropValue(propValueId, prop, propValue.getOdds());
+        propValueRepository.save(newPropValue);
     }
 
     @Override
-    public void updatePropValueOdds(String propId, PropValueDto propValue) {
-//        Prop propToUpdate = propRepository.findById(propId).orElse(null);
-//        if (propToUpdate == null) {
-//            // TODO throw something
-//        }
-//
-//        propValueRepository.
+    public void removePropValue(String propId, PropValueDto propValue) {
+        propValueRepository.deleteById(new PropValueId(propValue.getValue(), propId));
+    }
+
+    @Override
+    public void updatePropValueOdds(String propId, String propValue, int odds)
+            throws MissingResourceException {
+        PropValue toUpdate = propValueRepository
+                .findById(new PropValueId(propValue, propId))
+                .orElseThrow(MissingResourceException::new);
+        toUpdate.setOdds(odds);
+        propValueRepository.save(toUpdate);
+
+        // TODO send out WebSockets update
     }
 }

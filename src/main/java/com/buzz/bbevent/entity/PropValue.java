@@ -14,15 +14,13 @@ public class PropValue {
     private Prop prop;
 
     private Integer odds;
-    private Boolean isAlive;
 
     public PropValue() {}
 
-    public PropValue(PropValueId id, Prop prop, Integer odds, Boolean isAlive) {
+    public PropValue(PropValueId id, Prop prop, Integer odds) {
         this.id = id;
         this.prop = prop;
         this.odds = odds;
-        this.isAlive = isAlive;
     }
 
     public PropValueId getId() {
@@ -47,13 +45,5 @@ public class PropValue {
 
     public void setOdds(Integer odds) {
         this.odds = odds;
-    }
-
-    public Boolean isAlive() {
-        return isAlive;
-    }
-
-    public void setIsAlive(Boolean alive) {
-        isAlive = alive;
     }
 }
