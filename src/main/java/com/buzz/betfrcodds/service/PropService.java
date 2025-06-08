@@ -1,0 +1,15 @@
+package com.buzz.betfrcodds.service;
+
+import com.buzz.betfrcodds.dto.PropPostDto;
+import com.buzz.betfrcodds.dto.PropValueDto;
+import com.buzz.betfrcodds.entity.Prop;
+import com.buzz.betfrcodds.exception.InvalidRequestException;
+import com.buzz.betfrcodds.exception.MissingResourceException;
+
+public interface PropService {
+    Prop getProp(String id);
+    Prop createProp(PropPostDto prop);
+    void addPropValue(String propId, PropValueDto propValue) throws MissingResourceException, InvalidRequestException;
+    void removePropValue(String propId, PropValueDto propValue);
+    void updatePropValueOdds(String propId, String propValue, int odds) throws MissingResourceException;
+}
