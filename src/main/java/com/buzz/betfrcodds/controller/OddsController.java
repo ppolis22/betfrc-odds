@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/props")
 public class OddsController {
@@ -84,5 +86,16 @@ public class OddsController {
             }
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/event/{eventId}/match/{matchNum}")
+    public ResponseEntity<PropQueryResponseDto> getPropsForMatch(@PathVariable String eventId,
+                                                                 @PathVariable Integer matchNum) {
+        try {
+            PropQueryResponseDto props = propsService.getMatchProps(eventId, matchNum);
+            return ResponseEntity.ok().body(props);
+        } catch (InvalidRequestException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

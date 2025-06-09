@@ -1,17 +1,19 @@
 package com.buzz.betfrcodds.service;
 
+import com.buzz.betfrcodds.dto.PropDto;
 import com.buzz.betfrcodds.dto.PropPostDto;
+import com.buzz.betfrcodds.dto.PropQueryResponseDto;
 import com.buzz.betfrcodds.dto.PropValueDto;
-import com.buzz.betfrcodds.entity.Prop;
-import com.buzz.betfrcodds.entity.PropType;
-import com.buzz.betfrcodds.entity.PropValue;
-import com.buzz.betfrcodds.entity.PropValueId;
+import com.buzz.betfrcodds.entity.*;
 import com.buzz.betfrcodds.exception.InvalidRequestException;
 import com.buzz.betfrcodds.exception.MissingResourceException;
-import com.buzz.betfrcodds.repo.PropRepository;
-import com.buzz.betfrcodds.repo.PropTypeRepository;
-import com.buzz.betfrcodds.repo.PropValueRepository;
+import com.buzz.betfrcodds.repo.*;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PropServiceImpl implements PropService {
@@ -19,12 +21,14 @@ public class PropServiceImpl implements PropService {
     private final PropRepository propRepository;
     private final PropValueRepository propValueRepository;
     private final PropTypeRepository propTypeRepository;
+    private final MatchRepository matchRepository;
 
     public PropServiceImpl(PropRepository propRepository, PropTypeRepository propTypeRepository,
-                           PropValueRepository propValueRepository) {
+                           PropValueRepository propValueRepository, MatchRepository matchRepository) {
         this.propRepository = propRepository;
         this.propTypeRepository = propTypeRepository;
         this.propValueRepository = propValueRepository;
+        this.matchRepository = matchRepository;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class PropServiceImpl implements PropService {
             PropValue newPropValue = new PropValue(
                     newPropValueId,
                     createdProp,
-                    propValue.getOdds());
+                    propValue.getOdds(),
+                    true);
             propValueRepository.save(newPropValue);
         }
 
@@ -67,7 +72,7 @@ public class PropServiceImpl implements PropService {
             }
         }
         PropValueId propValueId = new PropValueId(propValue.getValue(), propId);
-        PropValue newPropValue = new PropValue(propValueId, prop, propValue.getOdds());
+        PropValue newPropValue = new PropValue(propValueId, prop, propValue.getOdds(), false);
         propValueRepository.save(newPropValue);
     }
 
@@ -86,5 +91,22 @@ public class PropServiceImpl implements PropService {
         propValueRepository.save(toUpdate);
 
         // TODO send out WebSockets update
+    }
+
+    @Override
+    public PropQueryResponseDto getMatchProps(String eventId, Integer matchNum) throws InvalidRequestException {
+        List<PropDto> props = new ArrayList<>();
+        List<Match> eventMatches = matchRepository.findByEventIdAndMatchNumber(eventId, matchNum);
+        if (eventMatches.size() != 1) throw new InvalidRequestException();
+
+        List<Prop> matchProps = propRepository.findByParentId(eventMatches.get(0).getId());
+        for (Prop prop : matchProps) {
+            List<PropValueDto> propValues = prop.getValues().stream()
+                    .map(v -> new PropValueDto(v.getId().getPropValue(), v.getOdds(), v.isActive()))
+                    .collect(Collectors.toList());
+            props.add(new PropDto(prop.getId(), prop.getType().getLabel(), propValues));
+        }
+
+        return new PropQueryResponseDto(props);
     }
 }

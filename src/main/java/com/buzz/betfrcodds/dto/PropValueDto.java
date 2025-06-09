@@ -6,7 +6,7 @@ public class PropValueDto {
 
     public PropValueDto() {}
 
-    public PropValueDto(String value, Integer odds) {
+    public PropValueDto(String value, Integer odds, Boolean isActive) {
         this.value = value;
         this.odds = odds;
     }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, String> {
     List<Match> findByEventId(String eventId);
+    List<Match> findByEventIdAndMatchNumber(String eventId, Integer matchNumber);
 }
