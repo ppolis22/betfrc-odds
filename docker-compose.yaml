@@ -1,7 +1,17 @@
 version: "3.2"
 services:
+    betfrcodds:
+        container_name: betfrcodds
+        image: ppolis22/betfrcodds
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/betfrcodds
+        ports:
+            - "8080:8080"
+        networks:
+            - internal
+        restart: unless-stopped
     postgres:
-        container_name: postgres_betfrcodds
+        container_name: betfrcodds-postgres
         image: postgres
         environment:
             POSTGRES_USER: buzz
@@ -13,10 +23,10 @@ services:
         ports:
             - "5432:5432"
         networks:
-            - postgres
+            - internal
         restart: unless-stopped
     pgadmin:
-        container_name: pgadmin_betfrcodds
+        container_name: betfrcodds-pgadmin
         image: dpage/pgadmin4
         environment:
             PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
@@ -27,12 +37,12 @@ services:
         ports:
             - "5050:80"
         networks:
-            - postgres
+            - internal
         restart: unless-stopped
 
 networks:
-    postgres:
-        driver: bridge
+    internal:
+        external: true
 
 volumes:
     postgres:
