@@ -2,6 +2,7 @@ package com.buzz.betfrcodds.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,17 +14,17 @@ public class Prop {
     @ManyToOne
     private PropType type;
 
-    @OneToMany(mappedBy = "prop")
+    @OneToMany(mappedBy = "prop", cascade = CascadeType.ALL)
     private List<PropValue> values;
 
     private String parentId;
 
     public Prop() { }
 
-    public Prop(String id, PropType type, String parentId) {
-        this.id = id;
+    public Prop(PropType type, String parentId) {
         this.type = type;
         this.parentId = parentId;
+        this.values = new ArrayList<>();
     }
 
     public String getId() {

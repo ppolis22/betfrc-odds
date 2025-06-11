@@ -9,9 +9,12 @@ import com.buzz.betfrcodds.exception.InvalidRequestException;
 import com.buzz.betfrcodds.exception.MissingResourceException;
 import com.buzz.betfrcodds.repo.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,29 +40,22 @@ public class PropServiceImpl implements PropService {
     }
 
     @Override
-    public Prop createProp(PropPostDto prop) {
-        // TODO check if prop already exists with same parent and propType
-        // TODO check if propValues contains duplicates
-        if (prop.getPropTypeId() == null || prop.getPropValues().size() == 0) {
-            return null;
-        }
-        PropType propType = propTypeRepository.findById(prop.getPropTypeId()).orElse(null);
-        Prop newProp = new Prop(null,
-                propType,
-                prop.getParentId());
-        Prop createdProp = propRepository.save(newProp);
+    @Transactional(rollbackFor = Exception.class)
+    public Prop createProp(PropPostDto propDto) throws InvalidRequestException, MissingResourceException {
+        String validationError = validatePropPostDto(propDto);
+        if (validationError != null) throw new InvalidRequestException(validationError);
 
-        for (PropValueDto propValue : prop.getPropValues()) {
-            PropValueId newPropValueId = new PropValueId(propValue.getValue(), createdProp.getId());
-            PropValue newPropValue = new PropValue(
-                    newPropValueId,
-                    createdProp,
-                    propValue.getOdds(),
-                    true);
-            propValueRepository.save(newPropValue);
-        }
+        PropType propType = propTypeRepository.findById(propDto.getPropTypeId())
+                .orElseThrow(MissingResourceException::new);
+        Prop newProp = new Prop(propType, propDto.getParentId());
+        newProp = propRepository.save(newProp);
 
-        return getProp(createdProp.getId());    // TODO find out why this doesn't work
+        for (PropValueDto propValue : propDto.getPropValues()) {
+            PropValueId newPropValueId = new PropValueId(propValue.getValue(), newProp.getId());
+            PropValue newPropValue = new PropValue(newPropValueId, newProp, propValue.getOdds(), true);
+            newProp.getValues().add(newPropValue);
+        }
+        return propRepository.save(newProp);
     }
 
     @Override
@@ -68,7 +64,7 @@ public class PropServiceImpl implements PropService {
         Prop prop = propRepository.findById(propId).orElseThrow(MissingResourceException::new);
         for (PropValue existingValue : prop.getValues()) {
             if (existingValue.getId().getPropValue().equals(propValue.getValue())) {
-                throw new InvalidRequestException();
+                throw new InvalidRequestException("Prop Value already exists for Prop");
             }
         }
         PropValueId propValueId = new PropValueId(propValue.getValue(), propId);
@@ -108,5 +104,23 @@ public class PropServiceImpl implements PropService {
         }
 
         return new PropQueryResponseDto(props);
+    }
+
+    private String validatePropPostDto(PropPostDto propDto) {
+        if (propDto.getPropTypeId() == null) return "Prop must contain Prop Type";
+        if (propDto.getPropValues().size() == 0) return "Prop must contain Prop Values";
+        if (containsDuplicates(propDto.getPropValues())) return "Prop values must be unique";
+        if (propRepository.existsByParentIdAndType_Id(propDto.getParentId(), propDto.getPropTypeId()))
+            return "Prop of this type already exists for this parent";
+        return null;
+    }
+
+    private boolean containsDuplicates(List<PropValueDto> propValues) {
+        Set<String> values = new HashSet<>();
+        for (PropValueDto propValue : propValues) {
+            if (values.contains(propValue.getValue())) return true;
+            values.add(propValue.getValue());
+        }
+        return false;
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface PropService {
     Prop getProp(String id);
-    Prop createProp(PropPostDto prop);
+    Prop createProp(PropPostDto prop) throws InvalidRequestException, MissingResourceException;
     void addPropValue(String propId, PropValueDto propValue) throws MissingResourceException, InvalidRequestException;
     void removePropValue(String propId, PropValueDto propValue);
     void updatePropValueOdds(String propId, String propValue, int odds) throws MissingResourceException;

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PropRepository extends JpaRepository<Prop, String> {
     List<Prop> findByParentId(String parentId);
+    Boolean existsByParentIdAndType_Id(String parentId, String typeId);
 }
