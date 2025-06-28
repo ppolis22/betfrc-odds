@@ -28,8 +28,12 @@ public class OddsController {
 
     @PostMapping()
     public ResponseEntity<Prop> createProp(@RequestBody PropPostDto prop) {
-        Prop createdProp = propsService.createProp(prop);
-        return new ResponseEntity<>(createdProp, HttpStatus.OK);
+        try {
+            Prop createdProp = propsService.createProp(prop);
+            return new ResponseEntity<>(createdProp, HttpStatus.OK);
+        } catch (InvalidRequestException | MissingResourceException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/{propId}")
